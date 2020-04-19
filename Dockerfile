@@ -5,4 +5,6 @@ RUN sed -i '/imklog/s/^/#/' /etc/rsyslog.conf
 
 COPY startup.sh /startup.sh
 EXPOSE 25
+VOLUME ["/var/postfix"]
+VOLUME ["/var/log"]
 CMD ["/startup.sh"]

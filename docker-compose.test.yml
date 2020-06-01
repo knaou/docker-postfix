@@ -1,0 +1,21 @@
+version: "3"
+services:
+  sut:
+    image: python
+    volumes:
+      - ./test:/work
+    command:
+      - /work/test.sh
+    depends_on:
+      - postfix
+  postfix:
+    build: .
+    environment:
+      MYHOSTNAME: mail.example.com
+      MYDOMAIN: example.com
+      RELAY_TO: mailhog:1025
+    depends_on:
+      - mailhog
+  mailhog:
+    image: mailhog/mailhog
+

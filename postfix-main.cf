@@ -1,0 +1,55 @@
+myhostname = {{MYHOSTNAME}}
+mydomain = {{MYDOMAIN}}
+myorigin = $mydomain
+smtpd_relay_restrictions = permit_mynetworks defer_unauth_destination
+mynetworks = 127.0.0.1/32 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
+queue_directory = /var/postfix/spool
+data_directory = /var/postfix/lib
+# --- original main.cf
+compatibility_level = 2
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+mail_owner = postfix
+unknown_local_recipient_reject_code = 550
+debug_peer_level = 2
+debugger_command =
+	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+	 ddd $daemon_directory/$process_name $process_id & sleep 5
+sendmail_path = /usr/sbin/sendmail
+newaliases_path = /usr/bin/newaliases
+mailq_path = /usr/bin/mailq
+setgid_group = postdrop
+html_directory = no
+manpage_directory = /usr/share/man
+sample_directory = /etc/postfix
+readme_directory = /usr/share/doc/postfix/readme
+inet_protocols = ipv4
+meta_directory = /etc/postfix
+shlib_directory = /usr/lib/postfix
+
+{{#RELAY_TO}}
+# Relay settings with sasl
+relayhost = {{RELAY_TO}}
+
+{{#USE_AUTH_FLAG}}
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/smtp_pass
+smtp_sasl_mechanism_filter = plain,login
+smtp_sasl_security_options = noanonymous
+{{/USE_AUTH_FLAG}}
+{{^USE_AUTH_FLAG}}
+smtp_sasl_auth_enable = no
+{{/USE_AUTH_FLAG}}
+
+{{#USE_TLS_FLAG}}
+smtp_tls_security_level = encrypt
+smtp_tls_wrappermode = yes
+smtp_tls_loglevel = 1
+smtp_tls_CApath = /etc/pki/tls/certs/ca-bundle.crt
+{{/USE_TLS_FLAG}}
+{{#USE_TLS_FLAG}}
+smtp_tls_security_level = none
+{{/USE_TLS_FLAG}}
+
+{{/RELAY_TO}}
+
